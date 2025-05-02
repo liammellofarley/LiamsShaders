@@ -7,3 +7,6 @@ Includes 40 LUTs, 20 set to Lut 1, 20 set to Lut 2. The image files contain 20 L
 The lut shader contains an interior and exterior version as I found it hard to get 1 light that looked nice in both interiors and exteriors. 
 
 The halation and chromatic aberration shaders have a variety of settings to tweak, the defaults are probably high for regular gameplay and more intended to take film-style screenshots.
+
+# Installation:
+Just add the LiamsShaders folder to your OpenMW paths. I recommend using the chromatic aberration shader, halation shader, and multi-lut in that order as the last shaders you load, but as long as its after any SSAO and clouds/mist shaders etc. it should be fine.
