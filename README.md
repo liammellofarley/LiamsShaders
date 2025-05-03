@@ -9,7 +9,7 @@ The lut shader contains an interior and exterior version as I found it hard to g
 The halation and chromatic aberration shaders have a variety of settings to tweak, the defaults are probably high for regular gameplay and more intended to take film-style screenshots.
 
 # Installation:
-Just download the LiamsSahders LiamsShaders folder and add it to your OpenMW paths. I recommend using the chromatic aberration shader, halation shader, and multi-lut in that order as the last shaders you load, but as long as its after any SSAO and clouds/mist shaders etc. it should be fine.
+Just download the LiamsShaders folder and add it to your OpenMW paths. I recommend using the chromatic aberration shader, halation shader, and multi-lut in that order as the last shaders you load, but as long as its after any SSAO and clouds/mist shaders etc. it should be fine.
 
 # Screenshots
 ![Screenshot](sc2/image.png?raw=true "Title")
