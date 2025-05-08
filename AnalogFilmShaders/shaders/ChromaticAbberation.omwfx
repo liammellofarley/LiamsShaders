@@ -1,0 +1,88 @@
+uniform_bool uEnabled {
+    header = "General";
+    default = true;
+	display_name = "Enable Effect";
+}
+
+uniform_float CABStrength {
+	display_name = "CA Strength";
+	description = "Overall strength of the effect";
+    default = 0.8;
+    min = 0.0;
+    max = 1.0;
+    step = 0.1;
+}
+
+uniform_float CABRadius {
+	display_name = "Radius";
+	description = "Determines how close to the edges the effect starts to kick in";
+    default = 1.0;
+    min = 0.1;
+    max = 2.0;
+    step = 0.1;
+}
+
+uniform_float CABSpread {
+	display_name = "Spread";
+	description = "Determines how wide the effect is, the spread of the color channels";
+    default = 0.005;
+    min = 0.001;
+    max = 0.02;
+    step = 0.0010;
+}
+
+uniform_float CABFalloff {
+	display_name = "Falloff";
+	description = "Determines the increase in effect from center to edges";
+    default = 1.0;
+    min = 0.1;
+    max = 5.0;
+    step = 0.1;
+}
+
+shared {
+    vec2 getToCenter(vec2 uv) {
+        return uv - vec2(0.5);
+    }
+
+    vec3 sampleCA(vec2 uv, vec2 offset, float strength) {
+        vec2 redOffset   = uv + offset * strength;
+        vec2 greenOffset = uv;
+        vec2 blueOffset  = uv - offset * strength;
+
+        float r = omw_GetLastShader(redOffset).r;
+        float g = omw_GetLastShader(greenOffset).g;
+        float b = omw_GetLastShader(blueOffset).b;
+
+        return vec3(r, g, b);
+    }
+}
+
+fragment main {
+    omw_In vec2 omw_TexCoord;
+
+    void main() {
+        vec3 scene = omw_GetLastShader(omw_TexCoord).rgb;
+
+        if (uEnabled) {
+            vec2 offset = getToCenter(omw_TexCoord);
+            float dist = length(offset) / CABRadius;
+            dist = clamp(dist, 0.0, 1.0);
+            dist = pow(dist, CABFalloff);
+
+            float shiftAmount = CABStrength * dist * CABSpread;
+            vec3 caColor = sampleCA(omw_TexCoord, offset, shiftAmount);
+
+            omw_FragColor = vec4(caColor, 1.0);
+        } else {
+            omw_FragColor = vec4(scene, 1.0);
+        }
+    }
+}
+
+technique {
+    description = "Chromatic Aberration";
+    passes = main;
+    version = "1.0";
+    author = "LiamMello";
+}

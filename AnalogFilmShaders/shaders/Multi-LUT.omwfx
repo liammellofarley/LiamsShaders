@@ -1,0 +1,117 @@
+uniform_bool uEnabled {
+	header = "General";
+    default = true;
+	display_name = "Enable Effect";
+}
+
+uniform_bool flipV {
+    default = true;
+	display_name = "Flip V";
+    description = "Can fix some LUTs that are broken in OpenMW";
+}
+
+uniform_int FilmStock {
+	header = "First Lut";
+    default = 0;
+    min = 0;
+    max = 39;
+	display_name = "Lut 1";
+}
+uniform_float FilmStrength {
+    default = 100.0;
+	min = 0;
+	max = 100;
+	display_name = "Lut 1 Strength";
+}
+
+uniform_int PrintStock {
+	header = "Second Lut";
+    default = 21;
+    min = 0;
+    max = 39;
+	display_name = "Lut 2";
+}
+
+uniform_float PrintStrength {
+    default = 0.0;
+	min = 0;
+	max = 100;
+	display_name = "Lut 2 Strength";
+}
+
+sampler_2d SamplerLUT {
+    source = "textures/Film_Lut.png";
+    mag_filter = linear;
+    min_filter = linear;
+}
+
+sampler_2d SamplerLut2 {
+    source = "textures/Film_Lut.png";
+    mag_filter = linear;
+    min_filter = linear;
+}
+
+shared {
+    vec3 saturate(vec3 value) {
+        return clamp(value, 0.0, 1.0);
+    }
+
+    vec3 ApplyLUT(vec3 colorIN, sampler2D LutSampler, float lutIndex, float totalLUTs) {
+        const float LUT_SIZE = 86.0;
+        const float SLICE_COUNT = 86.0;
+
+        colorIN = saturate(colorIN) * (LUT_SIZE - 1.0);
+        float sliceIndex = floor(colorIN.b);
+        float lerpFactor = colorIN.b - sliceIndex;
+        vec2 pixelCoord = colorIN.rg + 0.5;
+
+        vec2 texelSize = vec2(1.0 / (LUT_SIZE * SLICE_COUNT), 1.0 / (LUT_SIZE * totalLUTs));
+
+        vec2 uv1;
+        uv1.x = (sliceIndex * LUT_SIZE + pixelCoord.r) * texelSize.x;
+        uv1.y = (lutIndex * LUT_SIZE + pixelCoord.g) * texelSize.y;
+
+        vec2 uv2;
+        uv2.x = ((sliceIndex + 1.0) * LUT_SIZE + pixelCoord.r) * texelSize.x;
+        uv2.y = uv1.y;
+
+        if (flipV) {
+            uv1.y = 1.0 - uv1.y;
+            uv2.y = 1.0 - uv2.y;
+        }
+
+        vec3 col1 = omw_Texture2D(LutSampler, uv1).rgb;
+        vec3 col2 = omw_Texture2D(LutSampler, uv2).rgb;
+
+        return mix(col1, col2, lerpFactor);
+    }
+}
+
+fragment main {
+    omw_In vec2 omw_TexCoord;
+    void main() {
+        vec3 scene = omw_GetLastShader(omw_TexCoord).rgb;
+
+        if (uEnabled) {
+            float filmMix = clamp(FilmStrength / 100.0, 0.0, 1.0);
+            float printMix = clamp(PrintStrength / 100.0, 0.0, 1.0);
+
+            vec3 filmColor = ApplyLUT(scene, SamplerLUT, float(FilmStock), 40.0);
+            vec3 colorAfterFilm = mix(scene, filmColor, filmMix);
+
+            vec3 printColor = ApplyLUT(colorAfterFilm, SamplerLut2, float(PrintStock), 40.0);
+            vec3 finalColor = mix(colorAfterFilm, printColor, printMix);
+
+            omw_FragColor = vec4(finalColor, 1.0);
+        } else {
+            omw_FragColor = vec4(scene, 1.0);
+        }
+    }
+}
+technique {
+    description = "Multi-Lut Shader (Exteriors)";
+    passes = main;
+    version = "1.0";
+    author = "LiamMello (Rewrite of Epoch's port of xerofoxx's Lut)";
+    flags = Disable_Interiors;
+}
