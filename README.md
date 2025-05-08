@@ -1,15 +1,33 @@
-# LiamsShaders
+# Analog Film Shaders for OpenMW
 Film Style Shaders for OpenMW
 
-Includes a Multi-Lut shader that can apply 2 LUTs at the same time with magnitude control, a simple Halation shader, and a simple chromatic aberration shader. 
+hese are three shaders I made to try to get a more analog film look to my Morrowind, without resorting to reshade which applies to the entire UI.
 
-Includes 40 LUTs, 20 set to Lut 1, 20 set to Lut 2. The image files contain 20 LUTs each and are 86x86x86. If you want to use two LUTs from the Lut1 Image just copy that one over the Lut2. 
-The lut shader contains an interior and exterior version as I found it hard to get 1 light that looked nice in both interiors and exteriors. 
+**Multi-Lut**
+The multi-LUT shader has 40 different film preset based LUTs that allow you to apply a variety of different color styles to your game. It allows using two different LUTs at once and adjusting the magnitudes so you can blend them together. The shader is split into an exterior and interior version so you can have separate interior and exterior settings.
 
-The halation and chromatic aberration shaders have a variety of settings to tweak, the defaults are probably high for regular gameplay and more intended to take film-style screenshots.
+Eventually I'll add a guide that will explain how to make your own LUTs in lightroom and how to change the LUT pallete provided to your own.
 
-# Installation:
-Just download the LiamsShaders folder and add it to your OpenMW paths. I recommend using the chromatic aberration shader, halation shader, and multi-lut in that order as the last shaders you load, but as long as its after any SSAO and clouds/mist shaders etc. it should be fine.
+**Halation**
+A simple halation shader that applies a red glow around highlights. You can adjust this to apply around nearly anything or only very blown out highlights.
+Very customizable, default settings are somewhat subtle, but in general this was mostly designed for taking screenshots with the settings tweaked for your specific image.
+
+**Chromatic Aberration
+**A simple chromatic abberation shader. Pretty straightforward.
+
+Feel free to do whatever with these. They're mainly for personal use trying to make it so I didn't need to use Reshade shaders. Feel free to reach out if you have any questions or issues.
+
+CREDITS:
+﻿Huge thanks to xerofoxx for their LUT shader, and Epoch for porting it to OpenMW and helping me get started with OpenMW shaders. The Multi-Lut is based off of Epoch's port of Xero-Lut from MGE-XE.
+
+Epoch's Shaders:
+https://www.nexusmods.com/morrowind/mods/53747
+
+MGE-XE
+https://www.nexusmods.com/morrowind/mods/41102
+
+Nexus page for these shaders (more screenshots there):
+https://www.nexusmods.com/morrowind/mods/56507
 
 # Screenshots
 ![Screenshot](sc2/image.png?raw=true "Title")
